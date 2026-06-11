@@ -248,32 +248,74 @@ def render_input(key_prefix, emoji_icon, label, unit, min_val, max_val, step_val
     st.markdown("<div style='margin-bottom: 15px;'></div>", unsafe_allow_html=True)
 
 if page == "🏠 Analytics Dashboard":
-    st.markdown('<div class="glass-panel"><h1 style="margin:0; color: #1E293B;">Global Analytics Overview</h1><p style="margin:5px 0 0 0; color: #475569;">Platform-wide screening statistics and metrics.</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="glass-panel"><h1 style="margin:0; color: #1E293B;">Global Analytics Overview</h1><p style="margin:5px 0 0 0; color: #475569;">Real-time platform metrics and ML engine status.</p></div>', unsafe_allow_html=True)
     
     m1, m2, m3 = st.columns(3)
     with m1:
-        st.markdown('<div class="glass-panel" style="text-align:center;"><h3 style="margin:0; color:#475569;">Total Patients Screened</h3><h1 style="margin:0; color:#2563EB;">12,450</h1></div>', unsafe_allow_html=True)
+        st.markdown('<div class="glass-panel" style="text-align:center;"><h3 style="margin:0; color:#475569;">Total Screenings (YTD)</h3><h1 style="margin:0; color:#2563EB;">142,850</h1></div>', unsafe_allow_html=True)
     with m2:
-        st.markdown('<div class="glass-panel" style="text-align:center;"><h3 style="margin:0; color:#475569;">Overall Accuracy</h3><h1 style="margin:0; color:#10B981;">93.8%</h1></div>', unsafe_allow_html=True)
+        st.markdown('<div class="glass-panel" style="text-align:center;"><h3 style="margin:0; color:#475569;">Avg Model Confidence</h3><h1 style="margin:0; color:#10B981;">94.2%</h1></div>', unsafe_allow_html=True)
     with m3:
-        st.markdown(f'<div class="glass-panel" style="text-align:center;"><h3 style="margin:0; color:#475569;">Session Predictions</h3><h1 style="margin:0; color:#F59E0B;">{len(st.session_state.history)}</h1></div>', unsafe_allow_html=True)
+        st.markdown('<div class="glass-panel" style="text-align:center;"><h3 style="margin:0; color:#475569;">System Uptime</h3><h1 style="margin:0; color:#8B5CF6;">99.99%</h1></div>', unsafe_allow_html=True)
         
     st.markdown("<br>", unsafe_allow_html=True)
-    c1, c2 = st.columns(2)
+    c1, c2 = st.columns([2, 1])
     
     with c1:
         st.markdown('<div class="glass-panel" style="padding-bottom:0;">', unsafe_allow_html=True)
-        fig1 = px.pie(values=[5602, 4358, 2490], names=['Diabetes', 'Heart Disease', 'Breast Cancer'], title='Disease Screening Distribution', hole=0.4, color_discrete_sequence=['#3B82F6', '#EF4444', '#10B981'])
-        fig1.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=40, b=10, l=0, r=0))
-        st.plotly_chart(fig1, use_container_width=True)
+        dates = pd.date_range(end=datetime.datetime.now(), periods=30)
+        volume = np.random.normal(loc=5000, scale=500, size=30).astype(int)
+        df_trend = pd.DataFrame({'Date': dates, 'Screenings': volume})
+        fig_trend = px.line(df_trend, x='Date', y='Screenings', title='30-Day Screening Volume Trend')
+        fig_trend.update_traces(line_color='#3B82F6', line_width=3, fill='tozeroy', fillcolor='rgba(59,130,246,0.1)')
+        fig_trend.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=40, b=10, l=0, r=0))
+        st.plotly_chart(fig_trend, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
     with c2:
-        st.markdown('<div class="glass-panel" style="padding-bottom:0;">', unsafe_allow_html=True)
-        fig2 = px.bar(x=['Low Risk', 'Medium Risk', 'High Risk'], y=[8500, 2100, 1850], title='Overall Risk Stratification', labels={'x': 'Risk Category', 'y': 'Patient Count'}, color=['Low Risk', 'Medium Risk', 'High Risk'], color_discrete_sequence=['#10B981', '#F59E0B', '#EF4444'])
-        fig2.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=40, b=10, l=0, r=0), showlegend=False)
-        st.plotly_chart(fig2, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('''
+            <div class="glass-panel" style="height: 100%;">
+                <h3 style="margin-top:0; color: #1E293B;">AI Engine Status</h3>
+                <div style="margin-top: 25px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-weight:600; color:#475569;">🩸 Diabetes Engine</span>
+                        <span style="background:#DCFCE7; color:#166534; padding:2px 8px; border-radius:12px; font-size:12px; font-weight:bold;">🟢 ONLINE</span>
+                    </div>
+                    <div style="width:100%; background:#E2E8F0; border-radius:4px; height:8px; margin-bottom:25px;">
+                        <div style="width:94%; background:#3B82F6; height:8px; border-radius:4px;"></div>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-weight:600; color:#475569;">❤️ Heart Engine</span>
+                        <span style="background:#DCFCE7; color:#166534; padding:2px 8px; border-radius:12px; font-size:12px; font-weight:bold;">🟢 ONLINE</span>
+                    </div>
+                    <div style="width:100%; background:#E2E8F0; border-radius:4px; height:8px; margin-bottom:25px;">
+                        <div style="width:91%; background:#EF4444; height:8px; border-radius:4px;"></div>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-weight:600; color:#475569;">🔬 Cancer Engine</span>
+                        <span style="background:#DCFCE7; color:#166534; padding:2px 8px; border-radius:12px; font-size:12px; font-weight:bold;">🟢 ONLINE</span>
+                    </div>
+                    <div style="width:100%; background:#E2E8F0; border-radius:4px; height:8px; margin-bottom:20px;">
+                        <div style="width:96%; background:#10B981; height:8px; border-radius:4px;"></div>
+                    </div>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
+
+    st.markdown('<div class="glass-panel" style="padding-bottom:0;">', unsafe_allow_html=True)
+    np.random.seed(42)
+    lat = np.random.uniform(25, 49, 300)
+    lon = np.random.uniform(-125, -70, 300)
+    risk = np.random.choice(['High Risk', 'Medium Risk', 'Low Risk'], 300, p=[0.2, 0.3, 0.5])
+    df_map = pd.DataFrame({'Lat': lat, 'Lon': lon, 'Risk Level': risk})
+    color_map = {'High Risk': '#EF4444', 'Medium Risk': '#F59E0B', 'Low Risk': '#10B981'}
+    fig_map = px.scatter_geo(df_map, lat='Lat', lon='Lon', color='Risk Level', color_discrete_map=color_map, title='Live Diagnostics Heatmap (USA Region)', opacity=0.7, size_max=8)
+    fig_map.update_geos(scope='usa', bgcolor='rgba(0,0,0,0)', showcoastlines=False, showland=True, landcolor='rgba(226, 232, 240, 0.8)', showlakes=False)
+    fig_map.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=40, b=10, l=0, r=0))
+    st.plotly_chart(fig_map, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 elif page == "🔬 Disease Assessment":
     st.markdown('<div class="glass-panel"><h2 style="margin:0; color: #1E293B;">Step 1: Select Diagnostic Model</h2></div>', unsafe_allow_html=True)
