@@ -345,18 +345,22 @@ if page == "🏠 Dashboard":
         st.markdown("---")
         with st.spinner('Analyzing patient data...'):
             time.sleep(1)
-            if disease_selection == "Diabetes":
-                result = predict_diabetes(user_input, artifacts)
-                risk_label = result['prediction_label']
-                prob = float(result['probabilities']['Diabetic'].strip('%'))
-            elif disease_selection == "Heart Disease":
-                result = predict_heart_disease(user_input, artifacts)
-                risk_label = result['prediction_label']
-                prob = float(result['probabilities']['Heart Disease Present'].strip('%'))
-            elif disease_selection == "Breast Cancer":
-                result = predict_breast_cancer(user_input, artifacts)
-                risk_label = result['prediction_label']
-                prob = float(result['probabilities']['Malignant'].strip('%'))
+            try:
+                if disease_selection == "Diabetes":
+                    result = predict_diabetes(user_input, artifacts)
+                    risk_label = result['prediction_label']
+                    prob = float(result['probabilities']['Diabetic'].strip('%'))
+                elif disease_selection == "Heart Disease":
+                    result = predict_heart_disease(user_input, artifacts)
+                    risk_label = result['prediction_label']
+                    prob = float(result['probabilities']['Heart Disease Present'].strip('%'))
+                elif disease_selection == "Breast Cancer":
+                    result = predict_breast_cancer(user_input, artifacts)
+                    risk_label = result['prediction_label']
+                    prob = float(result['probabilities']['Malignant'].strip('%'))
+            except Exception as e:
+                st.error(f"Inference Engine Error: {e}")
+                st.stop()
                 
             if prob < 40:
                 risk_cat = "Low Risk"; theme_class = "safe"; icon = "🟢"
@@ -402,8 +406,11 @@ if page == "🏠 Dashboard":
                         <div style="margin-top: 30px;">
                 """.format(disease_selection, datetime.datetime.now().strftime('%Y-%m-%d %H:%M')), unsafe_allow_html=True)
                 
-                pdf_bytes = create_pdf_report(user_input, result, disease_selection)
-                st.download_button(label="📥 Download PDF Report", data=pdf_bytes, file_name=f"Assessment_{disease_selection.replace(' ', '_')}.pdf", mime="application/pdf", use_container_width=True)
+                try:
+                    pdf_bytes = create_pdf_report(user_input, result, disease_selection)
+                    st.download_button(label="📥 Download PDF Report", data=pdf_bytes, file_name=f"Assessment_{disease_selection.replace(' ', '_')}.pdf", mime="application/pdf", use_container_width=True)
+                except Exception as e:
+                    st.error(f"Failed to generate PDF Report: {e}")
                 st.markdown("</div></div>", unsafe_allow_html=True)
 
 elif page == "📜 History":

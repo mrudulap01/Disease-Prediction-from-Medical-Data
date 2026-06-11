@@ -16,7 +16,10 @@ DIABETES_ZERO_COLS = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'B
 
 def load_diabetes_model():
     try:
-        return joblib.load("best_diabetes_model.pkl"), joblib.load("diabetes_imputer.pkl"), joblib.load("diabetes_scaler.pkl")
+        import os
+        if not os.path.exists("models/best_diabetes_model.pkl"):
+            raise FileNotFoundError("models/best_diabetes_model.pkl not found.")
+        return joblib.load("models/best_diabetes_model.pkl"), joblib.load("models/diabetes_imputer.pkl"), joblib.load("models/diabetes_scaler.pkl")
     except Exception as e:
         logging.error(f"Failed to load diabetes artifacts: {e}")
         return None, None, None
@@ -46,7 +49,10 @@ HEART_FEATURES = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'tha
 
 def load_heart_model():
     try:
-        return joblib.load("best_heart_model.pkl"), joblib.load("heart_imputer.pkl"), joblib.load("heart_scaler.pkl")
+        import os
+        if not os.path.exists("models/best_heart_model.pkl"):
+            raise FileNotFoundError("models/best_heart_model.pkl not found.")
+        return joblib.load("models/best_heart_model.pkl"), joblib.load("models/heart_imputer.pkl"), joblib.load("models/heart_scaler.pkl")
     except Exception as e:
         logging.error(f"Failed to load heart artifacts: {e}")
         return None, None, None
@@ -75,8 +81,11 @@ def predict_heart_disease(user_input: dict, artifacts: tuple) -> dict:
 # Features were dynamically selected during training. We need to load them.
 def load_cancer_model():
     try:
-        features = joblib.load("cancer_features.pkl")
-        return joblib.load("best_cancer_model.pkl"), features, joblib.load("cancer_scaler.pkl")
+        import os
+        if not os.path.exists("models/best_cancer_model.pkl"):
+            raise FileNotFoundError("models/best_cancer_model.pkl not found.")
+        features = joblib.load("models/cancer_features.pkl")
+        return joblib.load("models/best_cancer_model.pkl"), features, joblib.load("models/cancer_scaler.pkl")
     except Exception as e:
         logging.error(f"Failed to load breast cancer artifacts: {e}")
         return None, None, None
