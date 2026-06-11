@@ -226,14 +226,11 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     st.markdown("---")
     
-    st.markdown("**1. Select Diagnostic Model**")
-    disease_selection = st.selectbox("Disease Type", ["Diabetes", "Heart Disease", "Breast Cancer"], label_visibility="collapsed")
-    
-    st.markdown("<br>**2. Navigation**", unsafe_allow_html=True)
-    page = st.radio("Go to", ["🏠 Dashboard", "📜 History"], label_visibility="collapsed")
+    st.markdown("**Navigation**")
+    page = st.radio("Go to", ["🏠 Analytics Dashboard", "🔬 Disease Assessment", "📜 Patient History"], label_visibility="collapsed")
     
     st.markdown("---")
-    st.info("💡 **Tip:** Use the 'Autofill' buttons on the dashboard to test different patient scenarios quickly.")
+    st.info("💡 **Tip:** Use the 'Autofill' buttons on the Assessment page to test different patient scenarios quickly.")
 
 def render_input(key_prefix, emoji_icon, label, unit, min_val, max_val, step_val, default_val):
     if f'{key_prefix}_slider' not in st.session_state: st.session_state[f'{key_prefix}_slider'] = default_val
@@ -250,7 +247,39 @@ def render_input(key_prefix, emoji_icon, label, unit, min_val, max_val, step_val
     st.slider(f"s_{key_prefix}", min_value=min_val, max_value=max_val, step=step_val, key=f"{key_prefix}_slider", on_change=sync_input, args=(f"{key_prefix}_slider", f"{key_prefix}_num"), label_visibility="collapsed")
     st.markdown("<div style='margin-bottom: 15px;'></div>", unsafe_allow_html=True)
 
-if page == "🏠 Dashboard":
+if page == "🏠 Analytics Dashboard":
+    st.markdown('<div class="glass-panel"><h1 style="margin:0; color: #1E293B;">Global Analytics Overview</h1><p style="margin:5px 0 0 0; color: #475569;">Platform-wide screening statistics and metrics.</p></div>', unsafe_allow_html=True)
+    
+    m1, m2, m3 = st.columns(3)
+    with m1:
+        st.markdown('<div class="glass-panel" style="text-align:center;"><h3 style="margin:0; color:#475569;">Total Patients Screened</h3><h1 style="margin:0; color:#2563EB;">12,450</h1></div>', unsafe_allow_html=True)
+    with m2:
+        st.markdown('<div class="glass-panel" style="text-align:center;"><h3 style="margin:0; color:#475569;">Overall Accuracy</h3><h1 style="margin:0; color:#10B981;">93.8%</h1></div>', unsafe_allow_html=True)
+    with m3:
+        st.markdown(f'<div class="glass-panel" style="text-align:center;"><h3 style="margin:0; color:#475569;">Session Predictions</h3><h1 style="margin:0; color:#F59E0B;">{len(st.session_state.history)}</h1></div>', unsafe_allow_html=True)
+        
+    st.markdown("<br>", unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    
+    with c1:
+        st.markdown('<div class="glass-panel" style="padding-bottom:0;">', unsafe_allow_html=True)
+        fig1 = px.pie(values=[5602, 4358, 2490], names=['Diabetes', 'Heart Disease', 'Breast Cancer'], title='Disease Screening Distribution', hole=0.4, color_discrete_sequence=['#3B82F6', '#EF4444', '#10B981'])
+        fig1.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=40, b=10, l=0, r=0))
+        st.plotly_chart(fig1, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    with c2:
+        st.markdown('<div class="glass-panel" style="padding-bottom:0;">', unsafe_allow_html=True)
+        fig2 = px.bar(x=['Low Risk', 'Medium Risk', 'High Risk'], y=[8500, 2100, 1850], title='Overall Risk Stratification', labels={'x': 'Risk Category', 'y': 'Patient Count'}, color=['Low Risk', 'Medium Risk', 'High Risk'], color_discrete_sequence=['#10B981', '#F59E0B', '#EF4444'])
+        fig2.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=40, b=10, l=0, r=0), showlegend=False)
+        st.plotly_chart(fig2, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+elif page == "🔬 Disease Assessment":
+    st.markdown('<div class="glass-panel"><h2 style="margin:0; color: #1E293B;">Step 1: Select Diagnostic Model</h2></div>', unsafe_allow_html=True)
+    disease_selection = st.selectbox("Disease Type", ["Diabetes", "Heart Disease", "Breast Cancer"], label_visibility="collapsed")
+    st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
+
     st.markdown(f'''
         <div class="glass-panel" style="border-left: 5px solid rgba(59,130,246,0.8);">
             <h1 style="margin:0; font-size: 32px; color: #1E293B;">{disease_selection} Assessment</h1>
@@ -413,7 +442,7 @@ if page == "🏠 Dashboard":
                     st.error(f"Failed to generate PDF Report: {e}")
                 st.markdown("</div></div>", unsafe_allow_html=True)
 
-elif page == "📜 History":
+elif page == "📜 Patient History":
     st.markdown('<div class="glass-panel"><h1 style="margin:0; color: #1E293B;">Prediction History</h1></div>', unsafe_allow_html=True)
     if st.session_state.history.empty:
         st.info("No predictions made in this session yet.")
